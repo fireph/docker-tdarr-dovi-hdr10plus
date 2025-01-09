@@ -1,8 +1,8 @@
 FROM haveagitgat/tdarr_node:latest AS build
 
-ARG DOVI_TOOL_TAG=$(curl -s https://api.github.com/repos/quietvoid/dovi_tool/releases/latest | grep -oP '(?<="tag_name": ")[^"]*')
-ARG HDR10PLUS_TOOL_TAG=$(curl -s https://api.github.com/repos/quietvoid/hdr10plus_tool/releases/latest | grep -oP '(?<="tag_name": ")[^"]*')
-ARG MP4BPOX_TAG=$(curl -s https://api.github.com/repos/gpac/gpac/tags | grep -oP -m 1 '(?<="name": ")[^"]*')
+ARG DOVI_TOOL_TAG
+ARG HDR10PLUS_TOOL_TAG
+ARG MP4BOX_TAG
 
 RUN \
   apt-get update && \
@@ -16,7 +16,7 @@ RUN \
 
 # MP4BOX
 RUN \
-  git clone --depth 1 --branch ${MP4BPOX_TAG} https://github.com/gpac/gpac.git && \
+  git clone --depth 1 --branch ${MP4BOX_TAG} https://github.com/gpac/gpac.git && \
   cd gpac && \
   ./configure --static-bin && \
   make -j $(nproc) && \
