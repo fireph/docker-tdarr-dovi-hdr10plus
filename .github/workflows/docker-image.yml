@@ -51,5 +51,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: dungfu/tdarr-dovi-hdr10plus:latest
+          build-args: |
+            DOVI_TOOL_TAG=${{ env.DOVI_TOOL_TAG }}
+            HDR10PLUS_TOOL_TAG=${{ env.HDR10PLUS_TOOL_TAG }}
+            MP4BOX_TAG=${{ env.MP4BOX_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
