@@ -39,3 +39,8 @@ COPY --from=build --chmod=755 /usr/local/bin/hdr10plus_tool /usr/local/bin/
 
 COPY --from=build /usr/local/lib/libgpac_static.a /usr/local/lib/
 COPY --from=build --chmod=755 /usr/local/bin/MP4Box /usr/local/bin/gpac /usr/local/bin/
+
+RUN \
+  apt-get update && \
+  apt-get install -y mediainfo \
+  && rm -rf /var/lib/apt/lists/*
