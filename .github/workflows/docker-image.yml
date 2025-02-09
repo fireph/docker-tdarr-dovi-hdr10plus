@@ -5,8 +5,6 @@ on:
     - cron: '29 21 * * *'
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   tdarr-dovi-hdr10plus:
@@ -41,8 +39,34 @@ jobs:
           echo "DOVI_TOOL_TAG=${DOVI_TOOL_TAG}" >> $GITHUB_ENV
           echo "HDR10PLUS_TOOL_TAG=${HDR10PLUS_TOOL_TAG}" >> $GITHUB_ENV
 
+      - name: Fetch tdarr_node digest
+        id: fetch_digest
+        run: |
+          docker pull haveagitgat/tdarr_node:latest 2>/dev/null
+          TDARR_NODE_DIGEST=$(docker inspect --format='{{.Id}}' haveagitgat/tdarr_node:latest)
+
+          echo "TDARR_NODE_DIGEST=${TDARR_NODE_DIGEST}" >> $GITHUB_ENV
+
+      - name: Construct version fingerprint
+        id: version_info
+        run: |
+          FINGERPRINT="${DOVI_TOOL_TAG}-${HDR10PLUS_TOOL_TAG}-${TDARR_NODE_DIGEST}"
+          echo "FINGERPRINT=${FINGERPRINT}" >> $GITHUB_OUTPUT
+
+      - name: Restore version-check cache
+        id: restore_cache
+        uses: actions/cache/restore@v4
+        with:
+          path: version-check
+          key: ${{ steps.version_info.outputs.FINGERPRINT }}
+
+      - name: Check if fingerprint is cached
+        if: steps.restore_cache.outputs.cache-hit == 'true'
+        run: echo "Cache was hit, so we already have version-check/fingerprint."
+
       - name: Build and push Docker image
-        id: build-and-push
+        if: steps.cache_check.outputs.cache-hit != 'true'
+        id: build_and_push
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -54,3 +78,10 @@ jobs:
             HDR10PLUS_TOOL_TAG=${{ env.HDR10PLUS_TOOL_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Save version-check cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: version-check
+          key: ${{ steps.version_info.outputs.FINGERPRINT }}
