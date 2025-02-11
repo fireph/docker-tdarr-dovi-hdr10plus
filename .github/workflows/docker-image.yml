@@ -2,7 +2,7 @@ name: Dockerimage Main
 
 on:
   schedule:
-    - cron: '8 21 * * *'
+    - cron: '21 8 * * *'
   push:
     branches: [ "main" ]
     paths:
