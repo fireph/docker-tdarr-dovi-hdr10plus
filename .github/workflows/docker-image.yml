@@ -5,6 +5,9 @@ on:
     - cron: '29 21 * * *'
   push:
     branches: [ "main" ]
+    paths:
+      - ".github/workflows/docker-image.yml"
+      - "Dockerfile"
   workflow_dispatch:
 
 jobs:
