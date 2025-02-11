@@ -5,6 +5,7 @@ on:
     - cron: '29 21 * * *'
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   tdarr-dovi-hdr10plus:
